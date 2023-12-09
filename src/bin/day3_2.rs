@@ -2,6 +2,40 @@ use std::collections::HashSet;
 use std::fs::read_to_string;
 
 
+struct Array2D<T> {
+    arr: Vec<Vec<T>>,
+    cols: usize,
+    rows: usize,
+}
+
+impl<T: Copy> Array2D<T> {
+    fn new(r: usize, c: usize, v: T) -> Self {
+        Array2D { arr: vec![vec![v; c]; r], cols: c, rows: r }
+    }
+
+    fn get(&self, r: i16, c: i16) -> Option<&T> {
+        if r < 0 || c < 0 {
+            return None;
+        }
+        if let Some(r) = self.arr.get(r as usize) {
+            if let Some(v) = r.get(c as usize) {
+                return Some(v);
+            }
+        }
+        None
+    }
+
+    fn set(&mut self, r: usize, c: usize, v: T) -> Result<(), ()> {
+        if r >= self.rows || c >= self.cols {
+            Err(())
+        } else {
+            self.arr[r][c] = v;
+            Ok(())
+        }
+    }
+}
+
+
 fn read_lines(filename: &str) -> Vec<Vec<char>> {
     read_to_string(filename)
         .unwrap()  // panic on possible file-reading errors
@@ -21,6 +55,9 @@ fn main() {
     let mut ch: char;
     let mut number;
     let mut sum = 0;
+    const AROUND: [(i16, i16); 8] = [
+        (-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (1, -1), (-1, -1)
+    ];
 
     for r in 0..nb_rows {
         number = 0;
@@ -48,56 +85,23 @@ fn main() {
         }
     }
 
+    let mut table_2d = Array2D::new(nb_rows, nb_cols, 0);
+    for r in 0..nb_rows {
+        for c in 0..nb_cols {
+            table_2d.set(r, c, table[r][c]).unwrap();
+        }
+    }
+
     for r in 0..nb_rows {
         for c in 0..nb_cols {
             if lines[r][c] == '*' {
                 let mut numbers = HashSet::new();
-                if r != 0 {
-                    number = table[r-1][c];
-                    if number != 0 {
-                        numbers.insert(number);
-                    }
-                }
-                if r != nb_rows - 1 {
-                    number = table[r+1][c];
-                    if number != 0 {
-                        numbers.insert(number);
-                    }
-                }
-                if c != 0 {
-                    number = table[r][c-1];
-                    if number != 0 {
-                        numbers.insert(number);
-                    }
-                }
-                if c != nb_rows - 1 {
-                    number = table[r][c+1];
-                    if number != 0 {
-                        numbers.insert(number);
-                    }
-                }
-                if r != 0 && c != 0 {
-                    number = table[r-1][c-1];
-                    if number != 0 {
-                        numbers.insert(number);
-                    }
-                }
-                if r != 0 && c != nb_cols - 1 {
-                    number = table[r-1][c+1];
-                    if number != 0 {
-                        numbers.insert(number);
-                    }
-                }
-                if r != nb_rows - 1 && c != nb_cols - 1 {
-                    number = table[r+1][c+1];
-                    if number != 0 {
-                        numbers.insert(number);
-                    }
-                }
-                if r != nb_rows - 1 && c != 0 {
-                    number = table[r+1][c-1];
-                    if number != 0 {
-                        numbers.insert(number);
+
+                for (h, v) in AROUND {
+                    if let Some(number) = table_2d.get(r as i16 + h, c as i16 + v) {
+                        if *number != 0 {
+                            numbers.insert(*number);
+                        }
                     }
                 }
 

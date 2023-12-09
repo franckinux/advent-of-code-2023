@@ -11,6 +11,7 @@ fn read_lines(filename: &str) -> Vec<String> {
 
 fn get_calibration_value(s: String) -> u32 {
     let mut c: char;
+    #[allow(unused_assignments)]
     let mut number = 0;
 
     let mut char_iter = s.chars();
