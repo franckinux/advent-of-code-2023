@@ -11,54 +11,13 @@ fn read_lines(filename: &str) -> Vec<String> {
 
 
 fn get_points(s: String) -> u32 {
-    let mut c: char;
+    let parts: Vec<&str> = s.split(&[':', '|']).collect();
+    let wining: Vec<u32> = parts[1].split_whitespace().map(|x| x.to_string().parse().unwrap()).collect();
+    let lottery: Vec<u32> = parts[2].split_whitespace().map(|x| x.to_string().parse().unwrap()).collect();
 
-    let mut char_iter = s.chars();
-
-    loop {
-        if char_iter.next().unwrap() == ':' {
-            break;
-        }
-    }
-
-    let mut number = 0;
-    let mut winning = Vec::new();
-    loop {
-        c = char_iter.next().unwrap();
-        if c.is_whitespace() {
-            if number != 0 {
-                winning.push(number);
-            }
-            number = 0;
-            continue;
-        } else if c == '|' {
-            break;
-        }
-        number = number * 10 + c.to_digit(10).unwrap();
-    }
-
-    let mut number = 0;
-    let mut points = 0;
-    let mut end = false;
-    loop {
-        match char_iter.next() {
-            Some(ch) => { c = ch; },
-            None => { end = true },
-        }
-        if end || c.is_whitespace() {
-            if number != 0 {
-                if winning.iter().find(|&n| *n == number).is_some() {
-                    points += 1;
-                }
-            }
-            if end { break; }
-            number = 0;
-        } else {
-            number = number * 10 + c.to_digit(10).unwrap();
-        }
-    }
-
-    points
+    lottery.iter().fold(0, |acc, x| {
+        if let Some(_) = wining.iter().find(|y| x == *y) { acc + 1 } else { acc }
+    })
 }
 
 
