@@ -55,7 +55,7 @@ fn main() {
         }
     }
 
-    let mut location = 1_000_000_000_000;
+    let mut location = u64::MAX;
     for s in seeds {
         let mut v = s;
         for r in &ranges {
