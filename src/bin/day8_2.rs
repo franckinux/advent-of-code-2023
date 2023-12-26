@@ -40,9 +40,8 @@ fn main() {
         }
     }
 
-    let mut node_name = node_names[0].clone();
-    for _ in 0..10 {
-        println!("start node name {}", node_name);
+    let mut lcm_steps_number = 1;
+    for mut node_name in node_names {
         let mut steps_number = 0u64;
         let mut iter_steps = steps.chars().cycle();
         loop {
@@ -54,9 +53,10 @@ fn main() {
                 node_name = nodes.1.clone();
             };
             if node_name.chars().last().unwrap() == 'Z' {
+                lcm_steps_number = lcm(lcm_steps_number, steps_number);
                 break;
             };
         }
-        println!("{}", steps_number);
     }
+    println!("steps number {}", lcm_steps_number);
 }
