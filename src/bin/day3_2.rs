@@ -13,13 +13,13 @@ impl<T: Copy> Array2D<T> {
         Array2D { arr: vec![vec![v; c]; r], cols: c, rows: r }
     }
 
-    fn get(&self, r: i16, c: i16) -> Option<&T> {
+    fn get(&self, r: i16, c: i16) -> Option<T> {
         if r < 0 || c < 0 {
             return None;
         }
         if let Some(r) = self.arr.get(r as usize) {
             if let Some(v) = r.get(c as usize) {
-                return Some(v);
+                return Some(*v);
             }
         }
         None
@@ -99,8 +99,8 @@ fn main() {
 
                 for (h, v) in AROUND {
                     if let Some(number) = table_2d.get(r as i16 + h, c as i16 + v) {
-                        if *number != 0 {
-                            numbers.insert(*number);
+                        if number != 0 {
+                            numbers.insert(number);
                         }
                     }
                 }
